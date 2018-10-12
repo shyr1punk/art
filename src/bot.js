@@ -3,17 +3,32 @@ const token = process.env.TELEGRAM_BOT_TOKEN;
 const Bot = require('node-telegram-bot-api');
 let bot;
 
-const { getRandomPicture } = require('./database');
+const { getRandomPicture, getAllArtists } = require('./database');
 
-if(process.env.NODE_ENV === 'production') {
-  bot = new Bot(token);
-  bot.setWebHook(process.env.BOT_URL + bot.token);
-}
-else {
-  bot = new Bot(token, { polling: true });
+let currentArtist;
+
+async function init(token) {
+  if(process.env.NODE_ENV === 'production') {
+    bot = new Bot(token);
+    bot.setWebHook(process.env.BOT_URL + bot.token);
+  }
+  else {
+    bot = new Bot(token, { polling: true });
+  }
+
+  console.log('Bot server started in the ' + process.env.NODE_ENV + ' mode');
+
+  const { err, artists } = await getAllArtists();
+
+  if (err) {
+    console.error('Error artist fetch', err);
+  } else {
+    console.log('Artist fetch successful', JSON.stringify(artists));
+    currentArtist = artists;
+  }
 }
 
-console.log('Bot server started in the ' + process.env.NODE_ENV + ' mode');
+init(token);
 
 bot.on('message', async (msg) => {
   const { err, image } = await getRandomPicture();
