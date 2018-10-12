@@ -1,7 +1,11 @@
-const { Client } = require('pg');
+import { Client } from 'pg';
 
 const client = new Client();
 client.connect();
+
+interface Picture {
+  image: string;
+}
 
 async function getRandomPicture() {
   try {
@@ -12,7 +16,7 @@ async function getRandomPicture() {
     const res = await client.query(query);
 
     const picture = res.rows.find(
-      row => Boolean(row) &&
+      (row: Picture) => Boolean(row) &&
         row.image.indexOf('https://uploads.wikiart.org/Content/images/FRAME') === -1
     );
 
@@ -26,12 +30,16 @@ async function getRandomPicture() {
   }
 }
 
+interface Artist {
+  artistname: string;
+}
+
 async function getAllArtists() {
   try {
     const query = 'select artistname from pictures group by artistname';
     const res = await client.query(query);
 
-    const artists = res.rows.map(row => row.artistname);
+    const artists = res.rows.map((row: Artist) => row.artistname);
 
     return {
       err: null,
@@ -45,7 +53,7 @@ async function getAllArtists() {
 }
 
 
-module.exports = {
+export {
   getRandomPicture,
   getAllArtists
 };
