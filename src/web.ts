@@ -20,6 +20,7 @@ var server = app.listen(Number(process.env.PORT) || 3000, "0.0.0.0", () => {
 });
 
 module.exports = (bot: TelegramBot) => {
+  // @ts-ignore
   app.post('/' + bot.token, (req, res) => {
     console.log(bot)
     bot.processUpdate(req.body);

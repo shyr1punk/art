@@ -21,6 +21,7 @@ async function getCurrentArtist() {
 function init(token: string) {
   if(process.env.NODE_ENV === 'production') {
     bot = new TelegramBot(token);
+    // @ts-ignore
     bot.setWebHook(process.env.BOT_URL + bot.token);
   }
   else {
