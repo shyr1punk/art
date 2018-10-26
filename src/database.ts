@@ -4,21 +4,60 @@ const client = new Client();
 client.connect();
 
 interface Picture {
+  serie: string;
+  diameter: number;
+  sizeX: number;
+  yearOfTrade: number;
+  artistName: string;
+  location: string;
+  artistUrl: string;
+  contentId: number;
+  lastPrice: number;
+  period: string;
+  technique: string;
+  width: number;
+  title: string;
+  artistContentId: number;
+  material: string;
+  style: string;
+  completitionYear: number;
+  sizeY: number;
+  height: number;
+  galleryName: string;
+  description: string;
+  tags: string;
+  yearAsString: string;
+  genre: string;
   image: string;
+  dictionaries: number[],
+  auction: string;
+  url: string
+}
+
+interface Artist {
+  artistname: string,
+  url: string,
+  wikipediaUrl: string,
+  deathDay: Date,
+  contentId: number,
+  deathDayAsString: string,
+  birthDayAsString: string,
+  birthDay: Date,
+  lastNameFirst: string,
+  image: string,
+  dictonaries: number[]
 }
 
 async function getRandomPicture() {
   try {
     const query =
-      `SELECT * FROM pictures
-      OFFSET floor(random() * (select COUNT(*) from pictures))
-      LIMIT 5;`;
+      `SELECT * FROM
+        (SELECT * FROM pictures OFFSET floor(random() * (select COUNT(*) from pictures))) random
+        WHERE image NOT LIKE 'https://uploads.wikiart.org/Content/images/FRAME-600x480.jpg'
+        LIMIT 1`;
     const res = await client.query(query);
 
-    const picture = res.rows.find(
-      (row: Picture) => Boolean(row) &&
-        row.image.indexOf('https://uploads.wikiart.org/Content/images/FRAME') === -1
-    );
+    const picture = res.rows[0].row;
 
     return {
       err: null,
@@ -28,10 +67,6 @@ async function getRandomPicture() {
   } catch (err) {
     return { err };
   }
-}
-
-interface Artist {
-  artistname: string;
 }
 
 async function getAllArtists() {
